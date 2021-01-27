@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<script type="text/javascript" src="/js/jquery-3.4.1.js" ></script>
+		
+		<!--bootstrap-->
+		<script type="text/javascript" src="/bootstrap/js/bootstrap.js" ></script>
+		<script type="text/javascript" src="/bootstrap/js/npm.js" ></script>
+		<link rel="stylesheet" href="/bootstrap/css/bootstrap.css" />
+		<link rel="stylesheet" href="/bootstrap/css/bootstrap-theme.css" />
+		
+		<style>
+			*{
+				margin: 0;
+				padding:0;
+			}
+			.main{
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				background-color: rgb(204, 202, 203);
+				overflow-x: hidden;
+			}
+			
+			.main .user-info{
+				/*margin: auto;*/
+				background-color: blue;
+				border-radius: 40px;
+				padding: 10px 40px;
+			}
+			
+			.main .user-info .info{
+				width: 100%;
+				height: 60px;
+				color: white;
+				font-size: 44px;
+				margin: 10px 0;
+			}
+			
+			.main .qrCode{
+				background-color: white;
+				border-radius: 40px;
+				padding: 10px 40px;
+			}
+			
+			.main .qrCode .time{
+				width: 100%;
+				height: 60px;
+				color: black;
+				font-size: 44px;
+			}
+			
+			.main .qrCode .ewm{
+				width: 500px;
+				height: 500px;
+				margin: 24px auto;
+			}
+			
+			.main .box{
+				width: 90%;
+				height: auto;
+				margin: auto;
+				margin-top: 34px;
+			}
+			
+			.main .qrCode .links {
+				width: 100%;
+				height: 60px;
+			}
+			
+			.main .qrCode .links .link{
+				width: 50%;
+				height: 100%;
+				font-size: 44px;
+				color: blue;
+				float: left;
+				text-align: center;
+			}
+			
+			.glyphicon{
+				font-size: 40px;
+				/*修改容器的属性：把行内元素修改为块儿级元素*/
+				display: inline-block;
+				margin-left: 20px;
+			}
+		</style>
+		<script type="text/javascript" src="/js/qrcode.js" ></script>
+	</head>
+	<body>
+		<div class="main">
+			<div class="box user-info">
+				<div class="info"><span th:text="${session.all_city}">郑州</span>健康码<span id="eye" class="glyphicon glyphicon-eye-close" onclick="hideUserInfo()"></span></div>
+				<div class="info">姓名</div>
+				<div class="info name">张三</div>
+				<div class="info">证件号码</div>
+				<div class="info idCard">123456789012345678</div>
+			</div>
+			
+			<div class="box qrCode">
+				<div class="time">更新于 <span id="update_time">2020-04-03 00:00:00</span> <span class="glyphicon glyphicon-refresh" onclick="getDate()"></span></div>
+				<div class="ewm"></div>
+				<div class="links">
+					<div class="link">重新填写</div>
+					<div class="link">家人代办</div>
+				</div>
+			</div>
+			<span id="qrCodeColor" style="display: none" th:text="${qrCodeColor}"></span>
+		</div>
+		<script>
+
+			var qrcode = null;
+			function qrCode(){
+				// 需求：点击刷新按钮的时候要更新时间同时也要修改二维码的内容
+				// 修改二维码的内容：1、重新加载一次页面；2、通过异步请求的方式局部刷新二维码；
+				// 从用户角度体验上说，推荐使用异步请求的方式局部刷新
+				// 二维码更新，也就意味着二维码里面的text内容要更新
+				// 最终的需求就是通过异步的方式修改二维码的text内容
+				// text的内容从哪儿来？
+				// 异步请求一般情况下会通过后台获取内容，也就意味着需要写一个后台的方法
+				// 如何使用异步请求
+				// 异步请求的核心：XMLHttpRequest;
+				var xhr = new XMLHttpRequest();
+
+				// 沟通的对象：设置一个请求的路径
+				var url = "/health/qrText";
+				// 有了路径，打开这个通道
+				// method：请求的方式，get/post
+				// url：请求路径
+				// async：异步还是同步，true表示异步，false表示同步
+				xhr.open("get", url, true);
+				xhr.send();
+
+				xhr.onreadystatechange = function(){
+					// 表示两者之间的通讯已经成功
+					if(xhr.readyState == 4 && xhr.status == 200){
+						var msg = xhr.responseText;
+
+						// 创建一个二维码生成器
+						// QRCode(element, options);
+						// element：希望存放二维码的容器（元素）
+						// options：二维码的配置信息，多宽、多高、什么颜色
+						var qrCodeColor = document.querySelector("#qrCodeColor").innerHTML;
+
+						// 如果是第一次进来，qrcode肯定是空的
+						if(qrcode == null || qrcode == undefined){
+							// 创建一个二维码
+							qrcode = new QRCode(document.querySelector(".ewm"),{
+								text: msg,
+								width: 500,
+								height: 500,
+								colorDark: qrCodeColor,
+								colorLight: "white"
+							});
+						// 不是第一次进来，不用再重新创建二维码，直接修改二维码的内容
+						} else {
+							// 清除二维码
+							qrcode.clear();
+							// 重新给二维码赋值
+							qrcode.makeCode(msg);
+						}
+					}
+				}
+
+
+			}
+
+			// 需求1：在页面加载的时候生成一个时间展示到页面上去
+			// 需求2：点击刷新按钮的时候生成一个时间展示到页面上去
+			function getDate(){
+				// JS如果获取时间：Date
+				// 获取当前的系统时间
+				var date = new Date();
+				console.log(date);
+
+				// 由于默认的格式不是想要的，所以需要转换一下格式
+				// 分别获取年月日时分秒然后拼接起来
+				var year = date.getFullYear();
+				var month = date.getMonth() + 1;
+				var day = date.getDate();
+				var h = date.getHours();
+				var m = date.getMinutes();
+				var s = date.getSeconds();
+
+				var time = year +  '-' + lpad(month) + '-' + lpad(day) + ' ' + lpad(h) + ':' + lpad(m) + ':' + lpad(s);
+				console.log(time);
+
+				// 时间有了，要放到span标签中
+				// 先获取到span标签，由于span标签有id属性，所以可以使用id选择器
+				var span = document.querySelector("#update_time");
+				// 把拼接好的时间放到span标签中
+				span.innerHTML = time;
+
+				qrCode();
+			}
+
+			getDate();
+
+			function lpad(obj){
+				if(obj < 10){
+					return '0' + obj;
+				}
+				return obj;
+			}
+
+
+			
+			// 默认最开始隐藏用户的信息
+			// 隐藏：false
+			// 显示：true
+			var xianshi = false;
+			
+			function hideUserInfo(){
+				// 根据class="name"属性获取存放姓名的div
+				var name1 = document.querySelector(".name");
+				// 根据class="idCard"属性获取存放身份证号的div
+				var idCard1 = document.querySelector(".idCard");
+				// 根据id="eye"属性获取存眼睛图标
+				var eye = document.querySelector("#eye");
+				
+				// 姓名和身份证号的值
+				var name2 = "张三";
+				var idCard2 = "123456789012345678";
+				
+				// 如果是隐藏的标识
+				if(!xianshi){
+					
+					// 修改姓名div的内容
+					name1.innerHTML = "***";
+					// 修改身份证号的内容
+					idCard1.innerHTML = "******************";
+					
+					// 修改隐藏的标识为显示
+					xianshi = true;
+					
+					// 设置眼睛是关闭的效果
+					// setAttribute给属性赋值
+					eye.setAttribute("class", "glyphicon glyphicon-eye-close");
+				
+				// 如果是显示的标识
+				} else {
+					// 修改姓名div的内容
+					name1.innerHTML = name2;
+					// 修改身份证号的内容
+					idCard1.innerHTML = idCard2;
+					// 修改显示的标识为隐藏
+					xianshi = false;
+					
+					// 设置眼睛是打开的效果
+					// setAttribute给属性赋值
+					eye.setAttribute("class", "glyphicon glyphicon-eye-open");
+				}
+			}
+			
+			// 第一次加载页面时要执行
+			hideUserInfo();
+		</script>
+	</body>
+</html>

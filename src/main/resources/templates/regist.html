@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<!--
+	xmlns:th="http://www.thymeleaf.org
+	引入thymeleaf的语法库
+-->
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="UTF-8">
+		<title>八六三-健康码</title>
+		<script type="text/javascript" src="/js/jquery-3.1.1.js" ></script>
+		<script type="text/javascript" src="/bootstrap/js/bootstrap.js" ></script>
+		<link rel="stylesheet" href="/bootstrap/css/bootstrap.css" />
+		<link rel="stylesheet" href="/bootstrap/css/bootstrap-theme.css" />
+		
+		<style>
+			/*设置全局取消内外边距*/
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			body{
+				background-color: #E3E3E3;
+			}
+			/*核心内容宽高*/
+			.options{
+				width: 100%;
+				height: auto;
+			}
+			/*每个选项*/
+			.options .option{
+				width: 100%;
+				height: 7rem;
+				line-height: 7rem;
+				font-size: 2.5rem;
+				padding: 0 5%;
+				background-color: white;
+			}
+			/*第一个标题特殊*/
+			.options .title:first-child{
+				background-color: white;
+			}
+			/*所有的标题背景色*/
+			.options .title{
+				background-color: #E3E3E3;
+			}
+			/*必填项星星*/
+			.options .star{
+				display: inline-block;
+				color: red;
+				margin-right: 1rem;
+			}
+			/*所有内容字体颜色*/
+			.options .value{
+				color: rgb(107, 107, 107);
+			}
+			/*选项边框*/
+			.options .border{
+				border-bottom: .1rem solid #E3E3E3;
+				height: auto;
+				color: black;
+			}
+			/*健康信息问题答案*/
+			.options .option .q-list .question,
+			.options .option .q-list .answer{
+				width: 100%;
+				height: auto;
+				overflow-x: hidden;
+			}
+			/*健康信息答案布局*/
+			.options .option .q-list .answer span{
+				display: inline-block;
+				min-width: 10%;
+				max-width: 90%;
+				height: auto;
+			}
+			/*健康信息答案单选按钮*/
+			.options .option .q-list .answer span input{
+				width: 2.5rem;
+				height: 2.5rem;
+			}
+			/*条款*/
+			.options .tk{
+				margin: 2rem 0 0 0;
+				height: auto;
+			}
+			
+			.options .tk .q-list .answer{
+				border-bottom: .1rem solid #E3E3E3;
+			}
+			
+			.options .tk .q-list .answer span{
+				float: left;
+			}
+			/*提交按钮*/
+			.options .tk .but{
+				width: 100%;
+				height: auto;
+				font-size: 3rem;
+				color: white;
+				border-radius: 1rem;
+				background-color: blue;
+				text-align: center;
+				margin: 3rem 0;
+			}
+			.glyphicon{
+				color: blue;
+				display: inline-block;
+				margin-right: 1rem;
+				font-size: 3rem;
+			}
+		</style>
+	</head>
+	<body>
+		<!--<form action="result.html" class="myFrom" method="get">-->
+		<form action="/health/toRes" class="myFrom" method="get">
+		<div class="options">
+			<!--基础信息-->
+			<div class="option title"><span class="glyphicon glyphicon-ok-circle"></span>已实名认证</div>
+			<div class="option title"><span class="star">*</span>姓名</div>
+			<div class="option value">
+				张**
+				<input type="hidden" name="name" />
+			</div>
+			
+			<div class="option title"><span class="star">*</span>证件号码</div>
+			<div class="option value">
+				410881************
+				<input type="hidden" name="id" />
+			</div>
+			
+			<div class="option title"><span class="star">*</span>手机号码</div>
+			<div class="option value">
+				110****1234
+				<input type="hidden" name="tel" />
+			</div>
+			
+			<!--健康信息-->
+			<div class="option title"><span class="star">*</span>健康信息</div>
+			<div class="option value border">
+				<div class="q-list">
+					<div class="question">您是否在<span th:text="${city}">郑州</span>【含<span th:text="${session.all_city}">郑州</span>所有区县（市），下同】</div>
+					<div class="answer">
+						<span><input type="radio" name="q1" value="1"/></span>
+						<span>是</span>
+						<span><input type="radio"  name="q1" value="0"/></span>
+						<span>否</span>
+					</div>
+				</div>
+			</div>
+			<div class="option value border">
+				<div class="q-list">
+					<div class="question">最近14天是否离开过当前所在地？</div>
+					<div class="answer">
+						<span><input type="radio" name="q2" value="1"/></span>
+						<span>是</span>
+						<span><input type="radio"  name="q2" value="0"/></span>
+						<span>否</span>
+					</div>
+				</div>
+			</div>
+			<div class="option value border">
+				<div class="q-list">
+					<div class="question">您是否有发热、气促、呼吸道症状？</div>
+					<div class="answer">
+						<span><input type="radio" name="q3" value="1"/></span>
+						<span>是</span>
+						<span><input type="radio"  name="q3" value="0"/></span>
+						<span>否</span>
+					</div>
+				</div>
+			</div>
+			<div class="option value border">
+				<div class="q-list">
+					<div class="question">您近14天是否接触过发热或呼吸道症状的病人？</div>
+					<div class="answer">
+						<span><input type="radio" name="q4" value="1"/></span>
+						<span>是</span>
+						<span><input type="radio"  name="q4" value="0"/></span>
+						<span>否</span>
+					</div>
+				</div>
+			</div>
+			<div class="option value border">
+				<div class="q-list">
+					<div class="question">您近14天居住或暂住地同一楼道是否有过确诊病人或密切接触者人员？</div>
+					<div class="answer">
+						<span><input type="radio" name="q5" value="1"/></span>
+						<span>是</span>
+						<span><input type="radio"  name="q5" value="0"/></span>
+						<span>否</span>
+					</div>
+				</div>
+			</div>
+			
+			<!--条款信息-->
+			<div class="option tk">
+				<div class="q-list">
+					<div class="question"><span class="star">*</span>本人郑重承诺：</div>
+					<div class="answer">
+						<span><input type="radio" name="q6" value="1"/></span>
+						<span>河南健康码系统是基于河南省一体化政务服务平台开发，为疫情防空，本人统一成为河南省一体化政务平台"豫办事"用户，并领取健康码；本人同意以上信息依法提交所在辖区疫情防控部门统筹管理。</span>
+					</div>
+					<div class="answer">
+						<span><input type="radio" name="q7" value="1"/></span>
+						<span>上述信息是我本人填写，本人对信息内容的真实性和完整性负责。如果信息有误或缺失，本人愿承担相应的法律责任。同时，本人保证遵守防疫管控的各项规定，配合并听从各项措施和要求。</span>
+					</div>
+					<div class="answer">
+						<div class="but" onclick="toResult()">提交</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</form>
+		
+		<script>
+			function toResult(){
+				// 判断是否已经填写完毕
+				// 获取第一个问题的单选按钮
+				var q1 = document.querySelectorAll("input[name='q1']");
+				
+				// 判定是否有选中的，默认是false表示没有选中的
+				var isChecked1 = false;
+				var isChecked2 = true;
+				var isChecked3 = true;
+				var isChecked4 = true;
+				var isChecked5 = true;
+				var isChecked6 = true;
+				var isChecked7 = true;
+				
+				// 循环找有选中的
+				/*for(var i = 0; i < q1.length; i++){
+					// checked表示选中
+					if(q1[i].checked == true){
+						// 修改选中的表示为true
+						isChecked1 = true;
+						// 结束循环
+						break;
+					}
+				}*/
+				
+				/*if(!isChecked1 || !isChecked2 || !isChecked3
+					|| !isChecked4 || !isChecked5 || !isChecked6 
+					|| !isChecked7 ){
+					alert("请完成信息填写！");
+					// 结束方法
+					return;
+				}*/
+				
+				// 不推荐使用location.href
+				// location.href = "result.html";
+				
+				// 点击按钮提交表单
+				// 1、获取表单
+				var form = document.querySelector(".myFrom");
+				// 2、提交表单
+				form.submit();
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.soft.mapper.UserMapper">
+    <select id="selectAllUser" resultType="com.soft.entity.User">
+        select * from jduser
+    </select>
+    <insert id="insertUser" parameterType="com.soft.entity.User">
+        insert into jduser(userName,password,email) values(#{userName},#{password},#{email})
+    </insert>
+    <update id="updateUser" parameterType="com.soft.entity.User">
+        update jduser set userName=#{userName}, password=#{password},email=#{email} where id = #{id};
+    </update>
+    <delete id="deleteById" >
+        delete from jduser where id = #{id}
+    </delete>
+</mapper>

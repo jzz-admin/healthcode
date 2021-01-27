@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			*{
+				margin: 0;
+				padding: 0;
+			}
+			
+			.main{
+				position: absolute; /*绝对定位*/
+				width: 100%;
+				height: 100%;
+				background-color: rgb(29, 133, 253);
+				overflow-x: hidden;
+			}
+			
+			.main .head{
+				position: relative;
+				width: 100%;
+				height: auto;
+			}
+			
+			.main .head img{
+				width: 100%;
+				height: auto;
+			}
+			.main .head .title_text{
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+				height: auto;
+			}
+			.main .head .title{
+				width: 100%;
+				height: auto;
+				font-size: 120px;
+				text-align: center;
+				color: white;
+				margin-bottom: 50px;
+			}
+			
+			.main .head .sub_title{
+				width: 100%;
+				height: auto;
+				font-size: 40px;
+				text-align: center;
+				color: white;
+			}
+			
+			.main .city_list{
+				position: relative;
+				width: 90%;
+				height: auto;
+				margin:auto;
+				margin-top: 120px;
+			}
+			.main .city_list .choose{
+				width: 100%;
+				height: auto;
+				font-size: 40px;
+				color: white;
+			}
+			
+			.main .city_list .cities{
+				width: 100%;
+				height: auto;
+				background-color: pink;
+				margin-top: 50px;
+			}
+			
+			.main .city_list .cities .city{
+				width: 30%;
+				height: 100px;
+				line-height: 100px;
+				float: left;
+				font-size: 40px;
+				text-align: center;
+				border-radius: 50px;
+				color: white;
+				border: 1px solid white;
+				margin:13px;
+			}
+			
+			.main .city_list .but{
+				width:100%;
+				height: 100px;
+				line-height: 100px;
+				text-align: center;
+				background-color: orange;
+				border-radius: 50px;
+				font-size: 40px;
+				color: white;
+				margin-top: 50px;
+				margin-bottom: 100px;
+			}
+			
+			.main .city_list .choose select{
+				height: 60px;
+				line-height: 60px;
+				font-size: 40px;
+				background-color: rgb(29, 133, 253);
+				border:none;
+				color: white;
+			}
+		</style>
+		<script type="text/javascript" src="js/jquery-3.4.1.js" ></script>
+	</head>
+	<body>
+		<div class="main">
+			<div class="head">
+				<img src="img/jkm01.png"/>
+				<div class="title_text">
+					<div class="title">河南<span style="color:yellow">健康码</span></div>
+					<div class="sub_title">——抗击疫情我们一起努力——</div>
+				</div>
+			</div>
+			<div class="city_list">
+				<div class="choose">
+					<select onchange="choose()">
+					</select>
+				</div>
+				<div class="cities">
+				</div>
+				<div style="clear: both;"></div>
+				<div class="but" onclick="toRegist()">
+					立即使用
+				</div>
+			</div>
+		</div>
+		<script>
+			
+			var chooseCity;
+			
+			// obj：代表点的是谁
+			function getCity(obj){
+				// 点击当前div取消其他的背景色
+				// 取得所有的城市
+				var cities = document.querySelectorAll(".city");
+				// 通过循环去掉所有div的背景色等样式
+				for(var i = 0; i < cities.length; i++){
+					cities[i].style.backgroundColor = "";
+					cities[i].style.color = "white";
+				}
+				
+				// 去掉之后再修改当前点击的div的背景色
+				// 改变div的背景色
+				// obj代表div对象
+				// style代表：style属性
+				obj.style.backgroundColor = "white";
+				obj.style.color = "blue";
+				
+				chooseCity = obj.innerHTML;
+			}
+			
+			function toRegist(){
+				// 跳转页面之前要做判断，判断是否选择了城市
+				// 第一个判断：判断选择的是否是一个空的值
+				// 第二个判断：判断选择的是否是一个空对象
+				// 第三个判断：判断选择的是否是一个undefined
+				
+				// "" -> 内容是空的，相当于菜篮子里面什么都没有装
+				// null -> 希望有的内容，但是不存在，相当于要买一个Iphone12，12还没有生产出来
+				// undefined -> 希望有的内容，但是还没有找到。
+				if(chooseCity == null || chooseCity == undefined || chooseCity == ""){
+					alert("请选择城市！");
+					return;
+				}
+				
+				// 跳转到regist页面
+				// location -> BOM对象
+				// location浏览器的地址栏对象
+				// 可以通过href属性设置要访问的地址
+				// location.href = "regist.html?city=" + chooseCity;
+				location.href = "health/toReg?city=" + chooseCity;
+			}
+			/*function setCity(){
+				// 城市列表
+				var cities = ['郑州', '新乡', '周口', '开封', '南阳', '信阳', '济源', '焦作', '漯河', '许昌'];
+				
+				// 获取存放城市的容器
+				var city_box = document.querySelector(".cities");
+				
+				// cities.length：数组的元素内容
+				// 8
+				for(var i = 0; i < cities.length; i++){
+					// console.log(cities[i]);
+					// 把从数组获取到的城市放到城市盒子中
+					city_box.innerHTML += '<div class="city">'+cities[i]+'</div>';
+				}
+			}
+			setCity();*/
+			
+			
+			// 当页面加载完成之后设置下拉框的值
+			function setPro(){
+				// 当页面加载完成之后
+				// $ jquery的标识
+				$(function(){
+					// 读取json文件
+					// 第一个参数：json文件的路径
+					// 第二个参数：读取成功之后，要做的操作
+					// data中存储是所有的省份信息，是一个数组的形式
+					$.getJSON("city_code.json", function(data){
+						// 获取下拉框元素
+						var sel = document.querySelector("select");
+						
+						// 循环省份信息的数组取值
+						for(var i = 0; i < data.length; i++){
+							// data[i]每一个省份所有信息，包含code,name,city
+							var pro = data[i];
+							// console.log(pro);
+							
+							// 获取省份的代码
+							var code = pro.code;
+							// 获取省份的名字
+							var name = pro.name;
+							
+							// console.log(code, name);
+							// 默认选择河南的判断
+							if(code == '410000'){
+								sel.innerHTML += '<option value="'+code+'" selected>'+name+'</option>';
+							} else {
+								sel.innerHTML += '<option value="'+code+'">'+name+'</option>';
+							}
+						}
+					});
+				});
+			}
+			setPro();
+			
+			function choose(){
+				// 获取省份下拉框已经选择的值
+				// 410000
+				var code = document.querySelector("select").value;
+				
+				// 默认是河南省
+				if(code == null || code == ""){
+					code = "410000";
+				}
+				
+				$.getJSON("city_code.json", function(data){
+					for(var i = 0; i < data.length; i++){
+						if(code == data[i].code){
+							// 省份下的城市数组
+							var cities = data[i].city;
+							// 获取存放城市的容器
+							var city_box = document.querySelector(".cities");
+							city_box.innerHTML = "";
+							
+							// cities.length：数组的元素内容
+							// 8
+							for(var i = 0; i < cities.length; i++){
+								var city = cities[i].name;
+								city_box.innerHTML += '<div class="city" onclick="getCity(this)">'+city+'</div>';
+							}
+							// 跳出循环，已经找到需要的城市了，就不需要再查找下去
+							break;
+						}
+					}
+				});
+			}
+			choose();
+		</script>
+	</body>
+</html>
